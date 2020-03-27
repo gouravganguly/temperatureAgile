@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.exceptions.FieldEmptyException;
+import com.exceptions.NonNumericException;
 import com.exceptions.TemperatureException;
 
 import javax.swing.JLabel;
@@ -19,7 +20,9 @@ import javax.swing.JToggleButton;
 import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.awt.event.ActionEvent;
+import javax.swing.JFormattedTextField;
 
 public class ConvertTemp extends JFrame {
 
@@ -28,7 +31,6 @@ public class ConvertTemp extends JFrame {
 	private JTextField textField1;
 	private JTextField textField2;
 	private JLabel labelError;
-	
 	public static ConvertTemp getInstance() {
 		return instance;
 	}
@@ -98,7 +100,7 @@ public class ConvertTemp extends JFrame {
 		
 		
 		JLabel lblUp = new JLabel("\u00B0F");
-		lblUp.setBounds(214, 26, 28, 14);
+		lblUp.setBounds(209, 26, 28, 14);
 		panel_1.add(lblUp);
 		
 		JLabel lblDown = new JLabel("\u00B0C");
@@ -134,7 +136,7 @@ public class ConvertTemp extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 					try {
 						calculateTemp(textField1.getText(),lblOne.getText());
-					} catch (TemperatureException | FieldEmptyException e1) {
+					} catch (TemperatureException | FieldEmptyException | NonNumericException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
@@ -153,26 +155,38 @@ public class ConvertTemp extends JFrame {
 		});
 		btnClear.setBounds(168, 120, 89, 23);
 		panel_1.add(btnClear);
-	}
-	public boolean validateField(String textField) throws FieldEmptyException {
-			throw new FieldEmptyException("Field is Empty");
-	}
-	
-	public void calculateTemp(String temperature, String type) throws TemperatureException,FieldEmptyException{
-		labelError.setText("");
 		
+		NumberFormat format = DecimalFormat.getInstance();
+	}
+	public boolean validateField(String temperature) throws FieldEmptyException {	
 		if(temperature.isEmpty()) {
 			labelError.setText("Field is Empty");
 			textField2.setText("");
 			throw new FieldEmptyException("Field is Empty");
+		}  return true;
+	}
+	public boolean validateInput(String input) throws NonNumericException {
+		if(!input.matches("[+-]?[0-9]+(\\.[0-9]+)?([Ee][+-]?[0-9]+)?")) { // ^[a-zA-Z]*$
+			labelError.setText("Only numeric allowed");
+			textField2.setText("");
+			throw new NonNumericException("Only numeric allowed");
 		}
+				
+		return true;
+	}
+	
+	public void calculateTemp(String temperature, String type) throws TemperatureException,FieldEmptyException, NonNumericException{
+		labelError.setText("");
 		
-		if(type.equals("Fahrenheit")) {	
-			textField2.setText(calculateC(temperature));
-		} else if(type.equals("Celsius")) {
-			textField2.setText(calculateF(temperature));
+		boolean text = validateField(temperature);
+		boolean input = validateInput(temperature);
+		if(text && input) {
+			if(type.equals("Fahrenheit")) {	
+				textField2.setText(calculateC(temperature));
+			} else if(type.equals("Celsius")) {
+				textField2.setText(calculateF(temperature));
+			}
 		}
-		
 	}
 	public String calculateF(String temperature) throws TemperatureException {
 		double fahrenheit,celsius;

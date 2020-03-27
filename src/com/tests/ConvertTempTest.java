@@ -5,26 +5,13 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import com.exceptions.FieldEmptyException;
+import com.exceptions.NonNumericException;
 import com.exceptions.TemperatureException;
 import com.main.ConvertTemp;
 
 import junit.framework.TestCase;
 
 public class ConvertTempTest extends TestCase{
-	
-	/* Test No. 1
-	// Objective: To test Empty input
-	// Input(s): ""
-	 Expected Output:  Error        */
-	public void testIsEmpty() {
-		try {
-			boolean result = ConvertTemp.getInstance().validateField("");
-			fail("Exception Expected");
-		} catch (FieldEmptyException e) {
-			// TODO Auto-generated catch block
-			assertEquals("Field is Empty", e.getMessage());
-		}
-	}
 	
 	/* Test No. 1
 	// Objective: To test celsius in range -273.15 to 100  (Lower boundary value of valid partition)
@@ -166,7 +153,7 @@ public class ConvertTempTest extends TestCase{
 		}
 	}
 	
-	/* Test No. 11
+	/* Test No. 12
 	// Objective: To test Fahrenheit in range -459.67 to 212  (MaxInt of invalid partition)
 	// Input(s): temperature="212.1"
 	 Expected Output:  Error  */
@@ -176,6 +163,32 @@ public class ConvertTempTest extends TestCase{
 			fail("Exception Expected");
 		} catch (TemperatureException e) {
 			assertEquals("Value not in range", e.getMessage());
+		}
+	}
+	
+	/* Test No. 13
+	// Objective: To test Empty input
+	// Input(s): ""
+	 Expected Output:  Error        */
+	public void testIsEmpty() {
+		try {
+			boolean result = ConvertTemp.getInstance().validateField("");
+			fail("Exception Expected");
+		} catch (FieldEmptyException e) {
+			assertEquals("Field is Empty", e.getMessage());
+		}
+	}
+	
+	/* Test No. 14
+	// Objective: To test input is numeric
+	// Input(s): "Hello"
+	 Expected Output:  Error  	      */
+	public void testIsNumeric() {
+		try {
+			boolean result = ConvertTemp.getInstance().validateInput("Hello");
+			fail("Exception Expected");
+		} catch (NonNumericException e) {
+			assertEquals("Only numeric allowed", e.getMessage());
 		}
 	}
 }
